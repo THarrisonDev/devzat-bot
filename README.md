@@ -29,6 +29,9 @@ go build -o devzat-bot .
 remind 30m check the build
 remind 2h review #292
 remind 1d12h follow up with the vendor
+
+welcome            DM yourself the welcome guide (re-read it any time)
+welcome @teammate  DM the guide to someone else
 ```
 
 Units: `s`, `m`, `h`, `d` (and combinations, e.g. `1d12h`). The reminder is posted

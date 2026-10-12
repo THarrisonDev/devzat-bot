@@ -53,6 +53,27 @@ func startWelcome(s *api.Session) error {
 		return err
 	}
 
+	// `welcome` re-sends the guide on demand (useful for testing and for re-reading).
+	err = s.RegisterCmd("welcome", "[@user]", "Show the welcome guide again", func(cmd api.CmdCall, e error) {
+		if e != nil {
+			return
+		}
+		target := cmd.From
+		if f := strings.Fields(cmd.Args); len(f) > 0 {
+			target = strings.TrimPrefix(f[0], "@")
+		}
+		text := strings.ReplaceAll(guide, "{{name}}", target)
+		if sendErr := s.SendMessage(api.Message{Room: cmd.Room, From: welcomeName, DMTo: target, Data: text}); sendErr != nil {
+			_ = s.SendMessage(api.Message{
+				Room: cmd.Room, DMTo: cmd.From,
+				Data: "Couldn't DM " + target + " — are they online in this room?",
+			})
+		}
+	})
+	if err != nil {
+		return err
+	}
+
 	go func() {
 		var mu sync.Mutex
 		welcomed := map[string]bool{}
